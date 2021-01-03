@@ -46,7 +46,7 @@ export class HALSerializer {
         return validated.value
     }
 
-    register(type: any, schemaName: any, options: any) {
+    register(type: any, schemaName: any, options?: any) {
         if (_.isObject(schemaName)) {
             options = schemaName
             schemaName = 'default'
