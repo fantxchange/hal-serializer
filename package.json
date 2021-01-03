@@ -13,11 +13,12 @@
     "build": "rm -rf ./lib && tsc",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "pregitpush": "npm run format && npm run build && npm run test",
-    "gitpush": "git add . && git commit -m 'deploy for push' && git push origin master && false",
+    "gitpush": "git add . && git commit -m 'deploy for push' && git push origin master & exit 0",
     "preversion": "npm run gitpush",
     "version": "",
     "postversion": "git push --tags",
-    "push": "npm version patch"
+    "push": "npm version patch",
+    "eee": "exit 0"
   },
   "keywords": [
     "json",
