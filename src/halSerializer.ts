@@ -86,7 +86,7 @@ export class HALSerializer {
         return serialized
     }
 
-    serializeAsync(type: any, data: any, schema: any, extraData: any) {
+    serializeAsync(type: any, data: any, schema?: any, extraData?: any) {
         // Support optional arguments
         if (arguments.length === 3) {
             if (_.isPlainObject(schema)) {
@@ -135,7 +135,7 @@ export class HALSerializer {
         })
     }
 
-    deserialize(type: any, data: any, schema: any) {
+    deserialize(type: any, data: any, schema?: any) {
         schema = schema || 'default'
 
         if (!this.schemas[type]) {
@@ -161,7 +161,7 @@ export class HALSerializer {
         return deserializedData
     }
 
-    deserializeResource(type: any, data: any, schema: any) {
+    deserializeResource(type: any, data: any, schema?: any) {
         const resourceOpts = this.schemas[type][schema]
         const deserializedData: any = {}
 
@@ -192,7 +192,7 @@ export class HALSerializer {
         return deserializedData
     }
 
-    deserializeEmbedded(type: any, data: any, schema: any) {
+    deserializeEmbedded(type: any, data: any, schema?: any) {
         let deserializedEmbedded
 
         if (Object.keys(data).length === 1 && data._links && data._links.self && data._links.self.href) {
@@ -204,7 +204,7 @@ export class HALSerializer {
         return !_.isEmpty(deserializedEmbedded) ? deserializedEmbedded : undefined
     }
 
-    serializeData(type: any, data: any, options: any) {
+    serializeData(type: any, data: any, options?: any) {
         // Empty data
         if (_.isEmpty(data)) {
             // Return [] or null
