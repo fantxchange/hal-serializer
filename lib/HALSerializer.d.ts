@@ -1,20 +1,17 @@
-export = HALSerializer;
-declare class HALSerializer {
-    constructor(opts: any);
+export declare class HALSerializer {
     opts: any;
-    schemas: {};
-    validateOptions(options: any): any;
+    schemas: any;
+    constructor(opts: any);
+    validateOptions(options: string): any;
     register(type: any, schemaName: any, options: any): void;
-    serialize(type: any, data: any, schemaName: any, extraOptions: any, ...args: any[]): {
-        _links: Object;
-    };
-    serializeAsync(type: any, data: any, schema: any, extraData: any, ...args: any[]): Promise<any>;
+    serialize(type: any, data: any, schemaName: any, extraOptions: any): any;
+    serializeAsync(type: any, data: any, schema: any, extraData: any): Promise<unknown>;
     deserialize(type: any, data: any, schema: any): any;
-    deserializeResource(type: any, data: any, schema: any): {};
+    deserializeResource(type: any, data: any, schema: any): any;
     deserializeEmbedded(type: any, data: any, schema: any): any;
     serializeData(type: any, data: any, options: any): any;
     serializeAttributes(data: any, options: any): any;
-    serializeEmbedded(data: any, options: any, links: any): {} | undefined;
+    serializeEmbedded(data: any, options: any, links: any): any;
     serializeEmbeddedResource(embeddedType: any, embeddedData: any, rOptions: any, typeOptions: any, links: any, data: any): any;
     /**
      * Process options values.
@@ -27,7 +24,7 @@ declare class HALSerializer {
      * @param {Object} additionalData additional data passed to functions options
      * @return {Object}
      */
-    private processOptionsValues;
+    processOptionsValues(data: any, options: any, additionalData?: any): Partial<any> | undefined;
     /**
      * Recursively convert object keys case
      *
@@ -37,5 +34,5 @@ declare class HALSerializer {
      * @param {string} convertCaseOptions can be snake_case', 'kebab-case' or 'camelCase' format.
      * @return {Object}
      */
-    private _convertCase;
+    _convertCase(data: any, convertCaseOptions: any): any;
 }

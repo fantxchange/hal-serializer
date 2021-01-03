@@ -7,17 +7,17 @@
   "types": "./lib/index.d.ts",
   "scripts": {
     "tslint": "tslint -p tsconfig.json --config ./tslint.json",
-    "prebuild": "rm -rf ./lib && npm run tslint",
-    "build": "tsc",
-    "pretest": "npm run build",
-    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "format": "prettier --write \"src/**/*.ts\" ",
-    "gitpush": "npm run format && git add . && git commit -m 'deploy' && git push origin master",
-    "prepush": "npm test && npm run gitpush",
-    "push": "npm version patch",
-    "preversion": "npm test && npm run gitpush",
+    "clean": "rm -rf ./lib && rm -rf node_modules && rm -rf package-lock.json && npm install",
+    "xxxprebuild": "npm run tslint",
+    "build": "rm -rf ./lib && tsc",
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
+    "pregitpush": "npm run format && npm run build && npm run test",
+    "gitpush": "git add . && git commit -m 'deploy for push' && git push origin master",
+    "preversion": "npm run gitpush",
     "version": "",
-    "postversion": "git push --tags"
+    "postversion": "git push --tags",
+    "push": "npm version patch"
   },
   "keywords": [
     "json",
@@ -35,8 +35,10 @@
     "@types/cors": "^2.8.9",
     "@types/csv-parse": "^1.2.2",
     "@types/express": "^4.17.9",
+    "@types/joi": "^14.3.4",
     "@types/js-priority-queue": "0.0.5",
     "@types/jsonschema": "^1.1.1",
+    "@types/lodash": "^4.14.167",
     "@types/log4js": "^2.3.5",
     "@types/mocha": "^8.2.0",
     "@types/moment": "^2.13.0",
@@ -58,8 +60,8 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "into-stream": "^3.1.0",
-    "joi": "^8.0.3",
-    "lodash": "^4.5.1"
+    "into-stream": "^6.0.0",
+    "joi": "^17.3.0",
+    "lodash": "^4.17.20"
   }
 }
