@@ -2,7 +2,7 @@
   "name": "hal-serializer",
   "description": "Framework agnostic HAL serializer.",
   "license": "MIT",
-  "version": "0.1.90",
+  "version": "0.1.91",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
