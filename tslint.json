@@ -1,0 +1,17 @@
+{
+    "extends": [
+        "tslint:recommended",
+        "tslint-config-prettier"
+    ],
+    "rules": {
+        "no-var-keyword": true,
+        "only-arrow-functions": true,
+        "promise-function-async": true,
+        "variable-name": [
+            true,
+            "allow-leading-underscore"
+          ] },
+    "jsRules": {
+
+    }
+}
