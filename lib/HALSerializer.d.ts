@@ -4,7 +4,7 @@ export declare class HALSerializer {
     constructor(opts?: any);
     validateOptions(options: string): any;
     register(type: any, schemaName: any, options?: any): void;
-    serialize(type: any, data: any, schemaName: any, extraOptions: any): any;
+    serialize(type: any, data: any, schemaName?: any, extraOptions?: any): any;
     serializeAsync(type: any, data: any, schema: any, extraData: any): Promise<unknown>;
     deserialize(type: any, data: any, schema: any): any;
     deserializeResource(type: any, data: any, schema: any): any;

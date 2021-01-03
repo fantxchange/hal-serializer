@@ -58,7 +58,7 @@ export class HALSerializer {
         _.set(this.schemas, [type, name].join('.'), opts)
     }
 
-    serialize(type: any, data: any, schemaName: any, extraOptions: any) {
+    serialize(type: any, data: any, schemaName?: any, extraOptions?: any) {
         // Support optional arguments
         if (arguments.length === 3) {
             if (_.isPlainObject(schemaName)) {
