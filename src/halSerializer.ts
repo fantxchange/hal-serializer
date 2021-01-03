@@ -8,7 +8,7 @@ export class HALSerializer {
     opts: any
     schemas: any
 
-    constructor(opts: any) {
+    constructor(opts?: any) {
         this.opts = opts || {}
         this.schemas = {}
     }

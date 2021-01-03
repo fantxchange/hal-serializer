@@ -1,7 +1,7 @@
 export declare class HALSerializer {
     opts: any;
     schemas: any;
-    constructor(opts: any);
+    constructor(opts?: any);
     validateOptions(options: string): any;
     register(type: any, schemaName: any, options: any): void;
     serialize(type: any, data: any, schemaName: any, extraOptions: any): any;
