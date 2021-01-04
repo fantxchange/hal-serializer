@@ -9,7 +9,7 @@
     "tslint": "tslint -p tsconfig.json --config ./tslint.json",
     "format": "prettier --write \"src/**/*.ts\" ",
     "clean": "rm -rf ./lib && rm -rf node_modules && rm -rf package-lock.json && npm install",
-    "xxxprebuild": "npm run tslint",
+    "prebuild": "npm run tslint",
     "build": "rm -rf ./lib && tsc",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "pregitpush": "npm run format && npm run build && npm run test",

@@ -86,6 +86,7 @@ export class HALSerializer {
         return serialized
     }
 
+    // tslint:disable-next-line
     serializeAsync(type: any, data: any, schema?: any, extraData?: any) {
         // Support optional arguments
         if (arguments.length === 3) {
