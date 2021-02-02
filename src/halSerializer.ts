@@ -19,6 +19,7 @@ export class HALSerializer {
                 blacklist: joi.array().items(joi.string()).single().default([]),
                 whitelist: joi.array().items(joi.string()).single().default([]),
                 links: joi.alternatives([joi.func(), joi.object()]).default({}),
+                associations: joi.alternatives([joi.func(), joi.object()]).default({}),
                 embedded: joi
                     .object()
                     .pattern(
@@ -27,10 +28,12 @@ export class HALSerializer {
                             type: joi.string().required(),
                             schema: joi.string().default('default'),
                             links: joi.alternatives([joi.func(), joi.object()]).default({}),
+                            associations: joi.alternatives([joi.func(), joi.object()]).default({}),
                         }),
                     )
                     .default({}),
                 topLevelLinks: joi.alternatives([joi.func(), joi.object()]).default({}),
+                topLeveAssociations: joi.alternatives([joi.func(), joi.object()]).default({}),
                 topLevelMeta: joi.alternatives([joi.func(), joi.object()]).default({}),
                 convertCase: joi.string(),
             })
@@ -80,6 +83,7 @@ export class HALSerializer {
 
         const serialized: any = {}
         serialized._links = this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelLinks)
+        serialized._associations = this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelAssociations)
         _.assign(serialized, this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelMeta))
         _.assign(serialized, this.serializeData(type, data, this.schemas[type][schema]))
 
@@ -111,6 +115,10 @@ export class HALSerializer {
             if (!Array.isArray(data)) {
                 const serialized: any = {}
                 serialized._links = this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelLinks)
+                serialized._associations = this.processOptionsValues(
+                    extraOpts,
+                    this.schemas[type][schema].topLevelAssociations,
+                )
                 _.assign(serialized, this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelMeta))
                 _.assign(serialized, this.serializeData(type, data, this.schemas[type][schema]))
                 return resolve(serialized)
@@ -126,6 +134,10 @@ export class HALSerializer {
             stream.on('end', () => {
                 const serialized: any = {}
                 serialized._links = this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelLinks)
+                serialized._associations = this.processOptionsValues(
+                    extraOpts,
+                    this.schemas[type][schema].topLevelAssociations,
+                )
                 _.assign(serialized, this.processOptionsValues(extraOpts, this.schemas[type][schema].topLevelMeta))
                 serialized._embedded = {}
                 serialized._embedded[type] = serializedData
@@ -166,7 +178,10 @@ export class HALSerializer {
         const resourceOpts = this.schemas[type][schema]
         const deserializedData: any = {}
 
-        Object.assign(deserializedData, _.pick(data, _.difference(Object.keys(data), ['_links', '_embedded'])))
+        Object.assign(
+            deserializedData,
+            _.pick(data, _.difference(Object.keys(data), ['_links', '_associations', '_embedded'])),
+        )
 
         // Deserialize relationships
         if (data._embedded) {
@@ -202,6 +217,17 @@ export class HALSerializer {
             deserializedEmbedded = this.deserializeResource(type, data, schema)
         }
 
+        if (
+            Object.keys(data).length === 1 &&
+            data._associations &&
+            data._associations.self &&
+            data._associations.self.href
+        ) {
+            deserializedEmbedded = data._associations.self.href.split('/').pop()
+        } else {
+            deserializedEmbedded = this.deserializeResource(type, data, schema)
+        }
+
         return !_.isEmpty(deserializedEmbedded) ? deserializedEmbedded : undefined
     }
 
@@ -223,8 +249,14 @@ export class HALSerializer {
         // Single data
         const serializedData: any = {}
         serializedData._links = this.processOptionsValues(data, options.links)
+        serializedData._associations = this.processOptionsValues(data, options.associations)
         _.assign(serializedData, this.serializeAttributes(data, options))
-        serializedData._embedded = this.serializeEmbedded(data, options, serializedData._links)
+        serializedData._embedded = this.serializeEmbedded(
+            data,
+            options,
+            serializedData._links,
+            serializedData._associations,
+        )
 
         return serializedData
     }
@@ -248,7 +280,7 @@ export class HALSerializer {
         return serializedAttributes
     }
 
-    serializeEmbedded(data: any, options: any, links: any) {
+    serializeEmbedded(data: any, options: any, links: any, associations: any) {
         const serializedEmbedded: any = {}
 
         _.forOwn(options.embedded, (rOptions: any, embedded: any) => {
@@ -259,6 +291,7 @@ export class HALSerializer {
                 rOptions,
                 this.schemas[options.embedded[embedded].type][schema],
                 links,
+                associations,
                 data,
             )
 
@@ -278,6 +311,7 @@ export class HALSerializer {
         rOptions: any,
         typeOptions: any,
         links: any,
+        associations: any,
         data: any,
     ) {
         // Empty embedded data
@@ -289,13 +323,17 @@ export class HALSerializer {
         // To-many embedded resources
         if (_.isArray(embeddedData)) {
             links[embeddedType] = []
+            associations[embeddedType] = []
             const arrayEmbedded: any = _.compact(
                 embeddedData.map((d) =>
-                    this.serializeEmbeddedResource(embeddedType, d, rOptions, typeOptions, links, data),
+                    this.serializeEmbeddedResource(embeddedType, d, rOptions, typeOptions, links, associations, data),
                 ),
             )
             if (_.isEmpty(links[embeddedType])) {
                 delete links[embeddedType]
+            }
+            if (_.isEmpty(associations[embeddedType])) {
+                delete associations[embeddedType]
             }
             return !_.isEmpty(arrayEmbedded) ? arrayEmbedded : undefined
         }
@@ -303,13 +341,16 @@ export class HALSerializer {
         // To-One embedded resource
         let serializedEmbedded: any
         let rLinks
+        let rAssociations
 
         rLinks = this.processOptionsValues(embeddedData, rOptions.links, data)
+        rAssociations = this.processOptionsValues(embeddedData, rOptions.associations, data)
 
         if (_.isPlainObject(embeddedData)) {
             // Embedded resource has been populated
             serializedEmbedded = {}
             serializedEmbedded._links = rLinks
+            serializedEmbedded._associations = rAssociations
             _.assign(serializedEmbedded, this.serializeData(rOptions.type, embeddedData, typeOptions))
         }
 
@@ -319,6 +360,15 @@ export class HALSerializer {
                 links[embeddedType].push(rLinks)
             } else {
                 links[embeddedType] = rLinks
+            }
+        }
+
+        // Populate association
+        if (!_.isUndefined(rAssociations)) {
+            if (_.isArray(associations[embeddedType])) {
+                associations[embeddedType].push(rAssociations)
+            } else {
+                associations[embeddedType] = rAssociations
             }
         }
 

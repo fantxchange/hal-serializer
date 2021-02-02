@@ -11,8 +11,8 @@ export declare class HALSerializer {
     deserializeEmbedded(type: any, data: any, schema?: any): any;
     serializeData(type: any, data: any, options?: any): any;
     serializeAttributes(data: any, options: any): any;
-    serializeEmbedded(data: any, options: any, links: any): any;
-    serializeEmbeddedResource(embeddedType: any, embeddedData: any, rOptions: any, typeOptions: any, links: any, data: any): any;
+    serializeEmbedded(data: any, options: any, links: any, associations: any): any;
+    serializeEmbeddedResource(embeddedType: any, embeddedData: any, rOptions: any, typeOptions: any, links: any, associations: any, data: any): any;
     /**
      * Process options values.
      * Allows options to be an object or a function.
