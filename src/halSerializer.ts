@@ -322,18 +322,26 @@ export class HALSerializer {
 
         // To-many embedded resources
         if (_.isArray(embeddedData)) {
-            links[embeddedType] = []
-            associations[embeddedType] = []
+            if (links) {
+                links[embeddedType] = []
+            }
+            if (associations) {
+                associations[embeddedType] = []
+            }
             const arrayEmbedded: any = _.compact(
                 embeddedData.map((d) =>
                     this.serializeEmbeddedResource(embeddedType, d, rOptions, typeOptions, links, associations, data),
                 ),
             )
-            if (_.isEmpty(links[embeddedType])) {
-                delete links[embeddedType]
+            if (links) {
+                if (_.isEmpty(links[embeddedType])) {
+                    delete links[embeddedType]
+                }
             }
-            if (_.isEmpty(associations[embeddedType])) {
-                delete associations[embeddedType]
+            if (associations) {
+                if (_.isEmpty(associations[embeddedType])) {
+                    delete associations[embeddedType]
+                }
             }
             return !_.isEmpty(arrayEmbedded) ? arrayEmbedded : undefined
         }
